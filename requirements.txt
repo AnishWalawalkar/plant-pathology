@@ -1,11 +1,9 @@
 scipy
-torch
-torch-vision
 pandas
 numpy
 Pillow
 matplotlib
 sklearn
 albumentations
-tqdm
 transformers
+torchsummary
