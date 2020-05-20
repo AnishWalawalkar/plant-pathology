@@ -7,3 +7,4 @@ sklearn
 albumentations
 transformers
 torchsummary
+seaborn
