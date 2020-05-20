@@ -8,3 +8,4 @@ matplotlib
 sklearn
 albumentations
 tqdm
+transformers
