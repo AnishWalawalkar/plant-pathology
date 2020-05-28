@@ -4,6 +4,8 @@ import numpy as np
 from torchvision import transforms as T
 from PIL import Image
 
+from src.plant_pathology.image_utils import IMAGENET_MEAN, IMAGENET_STD
+
 
 class LeafDataset(Data.Dataset):
     def __init__(self, img_paths, labels=None, train=True, test=False):
@@ -19,10 +21,10 @@ class LeafDataset(Data.Dataset):
                                           T.RandomVerticalFlip(), ])
         self.test_transform = T.Compose([T.RandomRotation(25),
                                          T.RandomHorizontalFlip(),
-                                         T.RandomVerticalFlip(), ])
+                                         T.RandomVerticalFlip()])
         self.default_transform = T.Compose([T.ToTensor(),
-                                            T.Normalize((0.485, 0.456, 0.406),
-                                                        (0.229, 0.224, 0.225)), ])  # ImageNet Stats
+                                            T.Normalize(IMAGENET_MEAN,
+                                                        IMAGENET_STD), ])  # ImageNet Stats
 
     def __len__(self):
         return self.img_paths.shape[0]

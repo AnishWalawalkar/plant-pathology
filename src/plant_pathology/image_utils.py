@@ -36,8 +36,8 @@ def blur_image(X):
     return conv_forward_fast(X, w_blur, b_blur, blur_param)[0]
 
 
-SQUEEZENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-SQUEEZENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
 def preprocess_image(img):
@@ -45,12 +45,12 @@ def preprocess_image(img):
 
     Subtracts the pixel mean and divides by the standard deviation.
     """
-    return (img.astype(np.float32) / 255.0 - SQUEEZENET_MEAN) / SQUEEZENET_STD
+    return (img.astype(np.float32) / 255.0 - IMAGENET_MEAN) / IMAGENET_STD
 
 
 def deprocess_image(img, rescale=False):
     """Undo preprocessing on an image and convert back to uint8."""
-    img = img * SQUEEZENET_STD + SQUEEZENET_MEAN
+    img = img * IMAGENET_STD + IMAGENET_MEAN
     if rescale:
         vmin, vmax = img.min(), img.max()
         img = (img - vmin) / (vmax - vmin)
