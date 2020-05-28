@@ -18,7 +18,8 @@ class LeafDataset(Data.Dataset):
 
         self.train_transform = T.Compose([T.RandomRotation(25),
                                           T.RandomHorizontalFlip(),
-                                          T.RandomVerticalFlip(), ])
+                                          T.RandomVerticalFlip(),
+                                          T.ColorJitter(brightness=(0, 1.25), contrast=0.25)])
         self.test_transform = T.Compose([T.RandomRotation(25),
                                          T.RandomHorizontalFlip(),
                                          T.RandomVerticalFlip()])
