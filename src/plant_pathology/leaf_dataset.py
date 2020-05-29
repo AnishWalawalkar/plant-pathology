@@ -31,7 +31,7 @@ class LeafDataset(Data.Dataset):
         return self.img_paths.shape[0]
 
     def __getitem__(self, i):
-        image = Image.open(self.img_paths[i]).resize((512, 512))
+        image = Image.open(self.img_paths[i]).resize((224, 224))
         if not self.test:
             label = torch.tensor(np.argmax(self.labels.loc[i, :].values))
 

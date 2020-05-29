@@ -3,7 +3,7 @@ import torch
 from tqdm import tqdm
 
 
-def training(model, data_loader, optim, scheduler, loss_fn, acc_fn, device, train_size):
+def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, train_size):
     running_loss = 0
     preds_for_acc = []
     labels_for_acc = []
@@ -29,10 +29,10 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fn, device, trai
 
     pbar.close()
 
-    return running_loss / train_size, acc_fn(labels_for_acc, preds_for_acc)
+    return running_loss / train_size, [round(acc_fn(labels_for_acc, preds_for_acc),2) for acc_fn in acc_fns]
 
 
-def validation(model, data_loader, loss_fn, acc_fn, confusion_matrix, device, valid_size):
+def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, valid_size):
     running_loss = 0
     preds_for_acc = []
     labels_for_acc = []
@@ -52,11 +52,10 @@ def validation(model, data_loader, loss_fn, acc_fn, confusion_matrix, device, va
 
             pbar.update()
 
-        accuracy = acc_fn(labels_for_acc, preds_for_acc)
         conf_mat = confusion_matrix(labels_for_acc, preds_for_acc)
 
     pbar.close()
-    return running_loss / valid_size, accuracy, conf_mat
+    return running_loss / valid_size, [round(acc_fn(labels_for_acc, preds_for_acc), 2) for acc_fn in acc_fns], conf_mat
 
 
 def testing(model, data_loader, device):
