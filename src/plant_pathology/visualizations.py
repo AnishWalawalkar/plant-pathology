@@ -17,17 +17,18 @@ def compute_saliency_maps(X, y, model):
     return saliency
 
 
-def show_saliency_maps(X, y, model, class_names):
+def show_saliency_maps(X, y, model, class_names, device):
     # Convert X and y from numpy arrays to Torch Tensors
-    X_tensor = torch.cat([preprocess(Image.fromarray(x)) for x in X], dim=0)
-    y_tensor = torch.LongTensor(y)
+    X_tensor = torch.cat([preprocess(Image.fromarray(x)) for x in X], dim=0).to(device)
+    y_tensor = torch.LongTensor(y).to(device)
+    model.to(device)
 
     # Compute saliency maps for images in X
     saliency = compute_saliency_maps(X_tensor, y_tensor, model)
 
     # Convert the saliency map from Torch Tensor to numpy array and show images
     # and saliency maps together.
-    saliency = saliency.numpy()
+    saliency = saliency.cpu().numpy()
     N = X.shape[0]
     for i in range(N):
         plt.subplot(2, N, i + 1)
@@ -43,7 +44,7 @@ def show_saliency_maps(X, y, model, class_names):
 
 def class_visualization_update_step(img, model, target_y, l2_reg, learning_rate):
     scores = model(img)
-    s_y = scores[:, target_y] - l2_reg * img.square().sum()
+    s_y = scores[:, target_y] - l2_reg * (img * img).sum()
     s_y.backward()
 
     with torch.no_grad():
@@ -51,8 +52,12 @@ def class_visualization_update_step(img, model, target_y, l2_reg, learning_rate)
         img.grad.zero_()
 
 
-def create_class_visualization(target_y, model, dtype, class_names, **kwargs):
-    model.type(dtype)
+def create_class_visualization(target_y, model, device, class_names, **kwargs):
+    if torch.cuda.is_available():
+        dtype = torch.cuda.FloatTensor
+    else:
+        dtype = torch.FloatTensor
+    model.to(device).type(dtype)
     l2_reg = kwargs.pop('l2_reg', 1e-3)
     learning_rate = kwargs.pop('learning_rate', 25)
     num_iterations = kwargs.pop('num_iterations', 100)
