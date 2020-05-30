@@ -20,8 +20,8 @@ def get_resnet(train_labels, model_path=None):
     return load_pretrained_model(resnet34, model_path) if model_path else resnet34
 
 
-def get_densenet(train_labels, model_path=None):
-    densenet = models.densenet161(pretrained=True)
+def get_densenet(train_labels, pretrained=True, model_path=None):
+    densenet = models.densenet161(pretrained=pretrained)
     num_filters = densenet.classifier.in_features
     densenet.classifier = nn.Sequential(nn.Linear(num_filters, train_labels.shape[1]))
     return load_pretrained_model(densenet, model_path) if model_path else densenet
