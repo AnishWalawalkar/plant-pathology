@@ -29,7 +29,7 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
 
     pbar.close()
 
-    return running_loss / train_size, [round(acc_fn(labels_for_acc, preds_for_acc),2) for acc_fn in acc_fns]
+    return running_loss / train_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns]
 
 
 def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, valid_size):
@@ -55,7 +55,7 @@ def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, v
         conf_mat = confusion_matrix(labels_for_acc, preds_for_acc)
 
     pbar.close()
-    return running_loss / valid_size, [round(acc_fn(labels_for_acc, preds_for_acc), 2) for acc_fn in acc_fns], conf_mat
+    return running_loss / valid_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns], conf_mat
 
 
 def testing(model, data_loader, device):

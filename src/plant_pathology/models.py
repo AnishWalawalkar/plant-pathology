@@ -14,10 +14,10 @@ def load_pretrained_model(model, path):
 
 
 def get_resnet(train_labels, model_path=None):
-    resnet18 = models.resnet18(pretrained=True)
-    num_filters = resnet18.fc.in_features
-    resnet18.fc = nn.Linear(num_filters, train_labels.shape[1])
-    return load_pretrained_model(resnet18, model_path) if model_path else resnet18
+    resnet34 = models.resnet34(pretrained=True)
+    num_filters = resnet34.fc.in_features
+    resnet34.fc = nn.Linear(num_filters, train_labels.shape[1])
+    return load_pretrained_model(resnet34, model_path) if model_path else resnet34
 
 
 def get_densenet(train_labels, model_path=None):
