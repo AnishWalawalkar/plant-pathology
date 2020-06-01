@@ -35,8 +35,29 @@ def get_vggnet(train_labels, pretrained=True, model_path=None):
     return load_pretrained_model(model_ft, model_path) if model_path else model_ft
 
 
-def get_effecientnet():
-    pass
+def get_squeezenet(train_labels, pretrained=True, model_path=None):
+    """ Squeezenet
+    """
+    model_ft = models.squeezenet1_0(pretrained=True)
+    model_ft.classifier[1] = nn.Conv2d(512, train_labels.shape[1],
+                                       kernel_size=(1, 1), stride=(1, 1))
+    model_ft.num_classes = train_labels.shape[1]
+    return load_pretrained_model(model_ft, model_path) if model_path else model_ft
+
+
+def get_effecientnet(train_labels, pretrained=True, model_path=None):
+    # https://pypi.org/project/efficientnet-pytorch/
+    # https://www.kaggle.com/ateplyuk/pytorch-efficientnet
+    # https://www.kaggle.com/akasharidas/plant-pathology-2020-in-pytorch
+    model_ft = EfficientNet.from_pretrained('efficientnet-b5')
+
+    num_ftrs = model_ft._fc.in_features
+    model_ft._fc = nn.Linear(num_ftrs, train_labels.shape[1])
+    # model_ft._fc = nn.Sequential(nn.Linear(num_ftrs, 1000, bias=True),
+    #                              nn.ReLU(),
+    #                              nn.Dropout(p=0.5),
+    #                              nn.Linear(1000, num_classes, bias=True))
+    return load_pretrained_model(model_ft, model_path) if model_path else model_ft
 
 
 def initialize_model(model_name, num_classes, feature_extract, use_pretrained=True):
