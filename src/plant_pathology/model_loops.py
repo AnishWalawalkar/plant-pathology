@@ -12,6 +12,7 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
 
     for idx, (images, labels) in enumerate(data_loader):
         images, labels = images.to(device), labels.to(device)
+        # print(len(images))
         model.train()
         optim.zero_grad()
         scores = model(images)
@@ -21,6 +22,7 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
         scheduler.step()
 
         running_loss += loss.item() * labels.shape[0]
+
         labels_for_acc = np.concatenate((labels_for_acc, labels.cpu().numpy()), 0)
         preds_for_acc = np.concatenate(
             (preds_for_acc, np.argmax(scores.cpu().detach().numpy(), 1)), 0)
@@ -28,7 +30,7 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
         pbar.update()
 
     pbar.close()
-
+    print(labels_for_acc.shape)
     return running_loss / train_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns]
 
 
