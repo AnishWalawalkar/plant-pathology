@@ -10,3 +10,4 @@ albumentations
 transformers
 torchsummary
 seaborn
+efficientnet_pytorch
