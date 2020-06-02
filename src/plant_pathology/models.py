@@ -35,9 +35,11 @@ def get_vggnet(train_labels, pretrained=True, model_path=None):
     return load_pretrained_model(model_ft, model_path) if model_path else model_ft
 
 
-def get_effecientnet():
-    pass
-
+def get_effecientnet(train_labels, pretrained=True, model_path=None):
+    model_ft = EfficientNet.from_pretrained('efficientnet-b5')
+    num_ftrs = model_ft._fc.in_features
+    model_ft._fc = nn.Linear(num_ftrs, train_labels.shape[1])
+    return load_pretrained_model(model_ft, model_path) if model_path else model_ft
 
 def initialize_model(model_name, num_classes, feature_extract, use_pretrained=True):
     # https://pytorch.org/tutorials/beginner/finetuning_torchvision_models_tutorial.html

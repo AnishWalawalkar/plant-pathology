@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torch.functional as F
+import torch.nn.functional as F
 
 
 # https://github.com/fastai/course-v3/blob/master/nbs/dl2/exp/nb_09.py

@@ -5,14 +5,13 @@ from tqdm import tqdm
 
 def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, train_size):
     running_loss = 0
-    preds_for_acc = []
+    preds_for_acc = np.array([]).reshape(0, 4)
     labels_for_acc = []
 
     pbar = tqdm(total=len(data_loader), desc='Training')
 
     for idx, (images, labels) in enumerate(data_loader):
         images, labels = images.to(device), labels.to(device)
-        # print(len(images))
         model.train()
         optim.zero_grad()
         scores = model(images)
@@ -24,19 +23,17 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
         running_loss += loss.item() * labels.shape[0]
 
         labels_for_acc = np.concatenate((labels_for_acc, labels.cpu().numpy()), 0)
-        preds_for_acc = np.concatenate(
-            (preds_for_acc, np.argmax(scores.cpu().detach().numpy(), 1)), 0)
+        preds_for_acc = np.concatenate((preds_for_acc, scores.cpu().detach().numpy()), 0)
 
         pbar.update()
 
     pbar.close()
-    print(labels_for_acc.shape)
     return running_loss / train_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns]
 
 
 def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, valid_size):
     running_loss = 0
-    preds_for_acc = []
+    preds_for_acc = np.array([]).reshape(0, 4)
     labels_for_acc = []
 
     pbar = tqdm(total=len(data_loader), desc='Validation')
@@ -50,18 +47,18 @@ def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, v
 
             running_loss += loss.item() * labels.shape[0]
             labels_for_acc = np.concatenate((labels_for_acc, labels.cpu().numpy()), 0)
-            preds_for_acc = np.concatenate((preds_for_acc, np.argmax(scores.cpu().detach().numpy(), 1)), 0)
+            preds_for_acc = np.concatenate((preds_for_acc, scores.cpu().detach().numpy()), 0)
 
             pbar.update()
 
-        conf_mat = confusion_matrix(labels_for_acc, preds_for_acc)
+        conf_mat = confusion_matrix(labels_for_acc, np.argmax(preds_for_acc, axis=1))
 
     pbar.close()
     return running_loss / valid_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns], conf_mat
 
 
 def testing(model, data_loader, device):
-    preds_for_output = np.zeros((1, 4))
+    preds_for_acc = np.array([]).reshape(0, 4)
 
     with torch.no_grad():
         pbar = tqdm(total=len(data_loader))
