@@ -58,7 +58,7 @@ def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, v
 
 
 def testing(model, data_loader, device):
-    preds_for_acc = np.array([]).reshape(0, 4)
+    preds_for_output = np.array([]).reshape(0, 4)
 
     with torch.no_grad():
         pbar = tqdm(total=len(data_loader))
