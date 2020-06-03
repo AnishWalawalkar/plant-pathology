@@ -14,8 +14,8 @@ def load_pretrained_model(model, path):
     return model
 
 
-def get_resnet(train_labels, model_path=None):
-    resnet34 = models.resnet34(pretrained=True)
+def get_resnet(train_labels, pretrained=True, model_path=None):
+    resnet34 = models.resnet34(pretrained=pretrained)
     num_filters = resnet34.fc.in_features
     resnet34.fc = nn.Linear(num_filters, train_labels.shape[1])
     return load_pretrained_model(resnet34, model_path) if model_path else resnet34

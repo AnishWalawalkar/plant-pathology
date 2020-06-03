@@ -7,6 +7,7 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
     running_loss = 0
     preds_for_acc = np.array([]).reshape(0, 4)
     labels_for_acc = []
+    lrs = []
 
     pbar = tqdm(total=len(data_loader), desc='Training')
 
@@ -19,6 +20,8 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
         loss.backward()
         optim.step()
         scheduler.step()
+        lr_step = optim.state_dict()["param_groups"][0]["lr"]
+        lrs.append(lr_step)
 
         running_loss += loss.item() * labels.shape[0]
 
@@ -26,9 +29,9 @@ def training(model, data_loader, optim, scheduler, loss_fn, acc_fns, device, tra
         preds_for_acc = np.concatenate((preds_for_acc, scores.cpu().detach().numpy()), 0)
 
         pbar.update()
-
+    
     pbar.close()
-    return running_loss / train_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns]
+    return running_loss / train_size, [acc_fn(labels_for_acc, preds_for_acc) for acc_fn in acc_fns], lrs
 
 
 def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, valid_size):
@@ -58,7 +61,7 @@ def validation(model, data_loader, loss_fn, acc_fns, confusion_matrix, device, v
 
 
 def testing(model, data_loader, device):
-    preds_for_output = np.array([]).reshape(0, 4)
+    preds_for_output = np.zeros((1, 4))
 
     with torch.no_grad():
         pbar = tqdm(total=len(data_loader))
